@@ -1,0 +1,62 @@
+version: '3.4'
+
+services:
+  portainer:
+    image: portainer/portainer-ce
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+
+  eshopping.catalog.api:
+    image: ${DOCKER_REGISTRY-}eshoppingcatalogapi
+    container_name: eshopping.catalog.api
+    build:
+      context: .
+      dockerfile: services/catalog/eShopping.Catalog.Api/Dockerfile
+    
+  eshopping.catalog.db:
+    image: mongo:latest
+
+  eshopping.basket.api:
+    image: ${DOCKER_REGISTRY-}eshoppingbasketapi
+    container_name: eshopping.basket.api
+    build:
+      context: .
+      dockerfile: services/basket/eShopping.Basket.Api/Dockerfile
+
+  eshopping.basket.db:
+    image: redis:alpine
+
+  eshopping.discount.api:
+    image: ${DOCKER_REGISTRY-}eshoppingdiscountapi
+    container_name: eshopping.discount.api
+    build:
+      context: .
+      dockerfile: services/discount/eShopping.Discount.Api/Dockerfile
+
+  eshopping.discount.db:
+    image: postgres
+
+  eshopping.ordering.api:
+    container_name: eshopping.ordering.api
+    image: ${DOCKER_REGISTRY-}eshoppingorderingapi
+    build:
+      context: .
+      dockerfile: services/order/eShopping.Ordering.Api/Dockerfile
+
+  eshopping.ordering.db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+
+  eshopping.apigateway:
+    image: ${DOCKER_REGISTRY-}eshoppingapigateway
+    build:
+      context: .
+      dockerfile: gateways/eShopping.ApiGateway/Dockerfile
+
+volumes:
+  portainer_data:
+  mongo_data:
+  postgres_data:
+
+
+

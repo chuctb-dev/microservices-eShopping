@@ -1,0 +1,112 @@
+version: '3.4'
+
+services:
+  portainer:
+    container_name: eshopping.Portainer
+    restart: always
+    ports:
+      - "9090:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+  
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  eshopping.catalog.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
+      - "DatabaseSettings__ConnectionString=mongodb://eshopping.catalog.db:27017"
+      - "DatabaseSettings__DatabaseName=catalogDb"
+      - "DatabaseSettings__ProductsCollection=products"
+      - "DatabaseSettings__BrandsCollection=brands"
+      - "DatabaseSettings__TypesCollection=types"      
+    depends_on:
+      - eshopping.catalog.db  
+    ports:
+      - '9000:80'
+
+  eshopping.catalog.db:
+    container_name: eshopping.catalog.db
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    
+  eshopping.basket.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
+      - "CacheSettings__ConnectionString=eshopping.basket.db:6379"
+      - "GrpcSettings__DiscountUrl=http://eshopping.discount.api"
+      - "EventBusSettings__HostAddress=amqp://guest:guest@rabbitmq:5672"
+    depends_on:
+      - eshopping.basket.db
+      - rabbitmq 
+    ports:
+      - '9001:80'
+
+  eshopping.basket.db:
+    container_name: eshopping.basket.db
+    restart: always
+    ports:
+      - '6379:6379'
+
+  eshopping.discount.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
+      - "DatabaseSettings__ConnectionString=Host=eshopping.discount.db;Port=5432;Database=discount_db;Username=postgres;Password=604708;"
+    ports:
+      - '9002:80'
+
+  eshopping.discount.db:
+    container_name: eshopping.discount.db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=604708
+      - POSTGRES_DB=discount_db
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ 
+
+  eshopping.ordering.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
+      - "DatabaseSettings__ConnectionString=Server=eshopping.ordering.db;Database=order_db;User Id=sa;Password=Tranbachuc1998@@;Encrypt=False;" 
+      - "EventBusSettings__HostAddress=amqp://guest:guest@rabbitmq:5672"
+    depends_on:
+      - eshopping.ordering.db
+      - rabbitmq
+    ports:
+      - '9003:80'
+
+  eshopping.ordering.db:
+    container_name: eshopping.ordering.db
+    environment:
+      SA_PASSWORD: "Tranbachuc1998@@"
+      ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+      - "1433:1433"
+
+  eshopping.apigateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
+    depends_on:
+      - eshopping.catalog.api
+      - eshopping.basket.api
+      - eshopping.ordering.api
+    ports:
+      - "9010:80" 
+

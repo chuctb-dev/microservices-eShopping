@@ -1,0 +1,112 @@
+{
+  "Routes": [
+    // Catalog Api
+    {
+      "DownstreamPathTemplate": "/api/v1/catalog/ProductBrands", // Private endpoint, request will be redirected to this endpoint
+      "DownstreamScheme": "http", // Http scheme of private endpoint
+      "DownstreamHostAndPorts": [ // Host & Port of private endpoint
+        {
+          "Host": "host.docker.internal",
+          "Port": 9000
+        }
+      ],
+      "UpstreamPathTemplate": "/catalog/brands", // Public endpoint
+      "UpstreamHttpMethod": [ "GET" ] // Public verb
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/catalog/Products/{productId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 9000
+        }
+      ],
+      "UpstreamPathTemplate": "/catalog/products/{productId}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/catalog/Products",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 9000
+        }
+      ],
+      "UpstreamPathTemplate": "/catalog/products",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/catalog/Products/brand/{brandName}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 9000
+        }
+      ],
+      "UpstreamPathTemplate": "/catalog/products/brand/{brandName}",
+      "UpstreamHttpMethod": [ "GET" ]
+    }
+    // Basket Api
+    ,
+    {
+      "DownstreamPathTemplate": "/api/v1/Baskets/{userName}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 9001
+        }
+      ],
+      "UpstreamPathTemplate": "/baskets/{userName}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/Baskets",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 9001
+        }
+      ],
+      "UpstreamPathTemplate": "/baskets",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/Baskets/checkout",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 9001
+        }
+      ],
+      "UpstreamPathTemplate": "/baskets/checkout",
+      "UpstreamHttpMethod": [ "POST" ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "3s",
+        "PeriodTimespan": 1,
+        "Limit": 1
+      }
+    }
+    // Ordering Api
+    ,
+    {
+      "DownstreamPathTemplate": "/api/v1/Orders/username/{userName}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 9003
+        }
+      ],
+      "UpstreamPathTemplate": "/orders/{userName}",
+      "UpstreamHttpMethod": [ "GET" ]
+    }
+  ]
+}
