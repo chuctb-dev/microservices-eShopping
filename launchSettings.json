@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "eshopping.catalog.api": "StartDebugging",
+        "eshopping.basket.api": "StartDebugging",
+        "eshopping.discount.api": "StartDebugging",
+        "eshopping.ordering.api": "StartDebugging",
+        "eshopping.apigateway": "StartDebugging"
+      }
+    }
+  }
+}

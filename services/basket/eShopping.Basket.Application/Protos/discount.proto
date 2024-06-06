@@ -1,0 +1,38 @@
+﻿syntax = "proto3";
+option csharp_namespace = "eShopping.Discount.Grpc.Protos";
+
+// Define Discount service with 4 method
+service DiscountProtoService {
+  rpc GetDiscount(GetDiscountRequest) returns (CouponModel);
+  rpc CreateDiscount(CreateDiscountRequest) returns (CouponModel);
+  rpc UpdateDiscount(UpdateDiscountRequest) returns (CouponModel);
+  rpc DeleteDiscount(DeleteDiscountRequest) returns (DeleteDiscountResponse);
+}
+
+// Message with the number representing the sequence number for the field
+message CouponModel {
+  string id = 1;
+  string productId = 2;
+  string productName = 3;
+  string description = 4;
+  sint32 amount = 5;
+}
+
+message GetDiscountRequest {
+  string productId = 1;
+}
+
+message CreateDiscountRequest {
+  CouponModel coupon = 1;
+}
+message UpdateDiscountRequest {
+  CouponModel coupon = 1;
+}
+
+message DeleteDiscountRequest {
+  string productId = 1;
+}
+
+message DeleteDiscountResponse {
+  bool success = 1;
+}
